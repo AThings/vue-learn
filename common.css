@@ -1,0 +1,16 @@
+h1{
+    text-align: center;
+}
+p{
+    text-indent: 2em;
+}
+pre{
+    background: #f8f8f8;
+}
+h2{
+    padding:15px 0;
+    border-bottom: 1px solid #dddddd;
+}
+h3{
+    text-indent: 2em;
+}
