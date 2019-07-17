@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <link rel="stylesheet" href="../common.css">
+    <title>Document</title>
+    <style>
+        .active{
+            color: red;
+        }
+        .stronger{
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+    <h1>class 与 style 绑定</h1>
+
+    <h2>绑定HTML Class</h2>
+    <h3>对象语法</h3>
+    <p>我们可以传给 v-bind:class 一个对象，以动态地切换 class：</p>
+    <pre>
+        &lt;div v-bind:class="{ active: isActive }"&gt;&lt;/div&gt;
+    </pre>
+    <p>上面的语法表示 active 这个 class 存在与否将取决于数据属性 isActive 的 truthiness。</p>
+    <pre>
+        <div id='app1'>
+            <div v-bind:class='{ active: isActive }'> 
+                this is can change color
+            </div>
+            <button @click='change'>改变类</button>
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app1',
+            data: {
+                isActive: true
+            },
+            methods: {
+                change: function(){
+                    this.isActive  = !this.isActive
+                }
+            }
+        })
+    </script>
+    <p>你可以在对象中传入更多属性来动态切换多个 class。
+       此外，v-bind:class 指令也可以与普通的 class 属性共存。当有如下模板:</p>
+    <pre>
+        &lt;div v-bind:class="{ active: isActive }" class='stronger'&gt;&lt;/div&gt;
+    </pre>
+    <p>渲染如下</p>
+    <pre>
+        <div id='app2'>
+            <div v-bind:class='{ active: isActive }' class='stronger'> 
+                this is can change color, but font-weight no change
+            </div>
+            <button @click='change'>改变类</button>
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app2',
+            data: {
+                isActive: true
+            },
+            methods: {
+                change: function(){
+                    this.isActive  = !this.isActive
+                }
+            }
+        })
+    </script>
+    <p>绑定的数据对象不必内联定义在模板里：</p>
+    <pre>
+        &lt;div v-bind:class="classObject"&gt;&lt;/div&gt;
+        data: {
+            classObject: {
+                active: true,
+                'text-danger': false
+            }
+        }
+    </pre>
+    <p>渲染的结果和上面一样。我们也可以在这里绑定一个返回对象的计算属性。这是一个常用且强大的模式：</p>
+    <pre>
+        &lt;div v-bind:class="classObject"&gt;&lt;/div&gt;
+        data: {
+            isActive: true,
+            error: null
+        },
+        computed: {
+            classObject: function () {
+                return {
+                  active: this.isActive && !this.error,
+                  'text-danger': this.error && this.error.type === 'fatal'
+                }
+            }
+        }
+    </pre>
+    <h3>数组语法</h3>
+    <p>我们可以把一个数组传给 v-bind:class，以应用一个 class 列表：</p>
+    <pre>
+        &lt;div v-bind:class="[activeClass, errorClass]"&gt;&lt;/div&gt;
+        data: {
+            activeClass: 'active',
+            errorClass: 'text-danger'
+        }
+    </pre>
+</body>
+</html>

@@ -6,6 +6,7 @@
     , initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
     <link rel="stylesheet" href="../common.css">
     <title>Document</title>
 </head>
@@ -17,5 +18,172 @@
        的原始力量，你也可以不用模板，直接写渲染 (render) 函数，使用可选的 JSX 语法。</p>
     <h2>插值</h2>
     <h3>文本</h3>
+    <p>数据绑定最常见的形式就是使用“Mustache”语法 (双大括号) 的文本插值：</p>
+    <pre>
+        &lt;span&gt;Message: {{ msg }}&lt;/span&gt;
+    </pre>
+    <pre>
+        <div id='app1'>
+            Message: {{msg}}
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app1',
+            data: {
+                msg: "I'm a handsome boy"
+            }
+        })
+    </script>
+
+    <p>Mustache 标签将会被替代为对应数据对象上 msg 属性的值。无论何时，绑定的数据对象上 msg 属性发生了改变，插值处的内容都会更新。</p>
+    <p>通过使用 v-once 指令，你也能执行一次性地插值，当数据改变时，插值处的内容不会更新。但请留心这会影响到该节点上的其它数据绑定：</p>
+    <pre>
+        <div id='app2'>
+               <span v-once>这个不会变：{{msg}}</span>
+               <span>这个会变：{{msg}}</span> 
+               <input type="text" v-model='b'>
+               <button @click="change">改变msg值</button>
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app2',
+            data: {
+                msg: "123456",
+                b:''
+            },
+            methods:{
+                change: function(){
+                    this.msg = this.b
+                }
+            }
+        })
+    </script>
+
+    <h3>原始html</h3>
+    <p>双大括号会将数据解释为普通文本，而非 HTML 代码。为了输出真正的 HTML，你需要使用 v-html 指令：</p>
+    <pre>
+        &lt;p&gt;Using mustaches: {{ rawHtml }}&lt;/p&gt;
+        &lt;p&gt;Using v-html directive: &lt;span v-html="rawHtml"&gt;&lt;/span&gt;&lt;/p&gt;
+    </pre>
+    <pre>
+        <div id='app3'>
+            <p>Using mustaches: {{rawHtml}}</p>
+            <p>Using v-html directive: <span v-html='rawHtml'></span></p>
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app3',
+            data: {
+                rawHtml: "<span style='color:red'>this is red</span>"
+            }
+        })
+    </script>
+    <p>这个 span 的内容将会被<strong>替换</strong>成为属性值 rawHtml，
+        直接作为 HTML——会忽略解析属性值中的数据绑定。注意，你不能使用 v-html 来复合局部模板，
+        因为 Vue 不是基于字符串的模板引擎。反之，对于用户界面 (UI)，组件更适合作为可重用和可组合的基本单位。</p>
+
+    <h3>特性</h3>
+    <p>Mustache 语法不能作用在 HTML 特性上，遇到这种情况应该使用 v-bind 指令：</p>
+    <pre>
+        &lt;div v-bind:id="dynamicId"&gt;&lt;/div&gt;
+    </pre>
+    <p>对于布尔特性 (它们只要存在就意味着值为 true)，v-bind 工作起来略有不同，在这个例子中：</p>
+    <pre>
+        &lt;button v-bind:disabled="isButtonDisabled"&gt;Button&lt;/button&gt;
+    </pre>
+    <pre>
+        <div id='app4'>
+            <button v-bind:disabled="isButtonDisabled">有disabled特性</button>
+            <button v-bind:disabled="isDisabled">没有disabled特性</button>
+        </div>
+    </pre>
+    <script>
+        new Vue({
+            el: '#app4',
+            data: {
+                isButtonDisabled: true,
+                isDisabled: null
+            }
+        })
+    </script>
+    <p>如果 isButtonDisabled 的值是 null、undefined 或 false，
+       则 disabled 特性甚至不会被包含在渲染出来的 &lt;button&gt; 元素中。</p>
+
+    <h3>使用JavaScript表达式</h3>
+    <p>迄今为止，在我们的模板中，我们一直都只绑定简单的属性键值。
+       但实际上，对于所有的数据绑定，Vue.js 都提供了完全的 JavaScript 表达式支持。</p>
+    <pre>
+        {{ number + 1 }}
+
+        {{ ok ? 'YES' : 'NO' }}
+            
+        {{ message.split('').reverse().join('') }}
+            
+        &lt;div v-bind:id="'list-' + id"&gt;&lt;/div&gt;
+    </pre>
+    <p>这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。
+       有个限制就是，每个绑定都只能包含单个表达式，所以下面的例子都不会生效。</p>
+    <pre>
+        这是语句，不是表达式
+        {{ var a = 1 }}
+
+        流控制也不会生效，请使用三元表达式
+        {{ if (ok) { return message } }}
+    </pre>
+    <p>模板表达式都被放在沙盒中，只能访问全局变量的一个白名单，如 Math 和 Date 。
+       你不应该在模板表达式中试图访问用户定义的全局变量。</p>
+
+    <h2>指令</h2>
+    <p>指令 (Directives) 是带有 v- 前缀的特殊特性。
+       指令特性的值预期是单个 JavaScript 表达式 (v-for 是例外情况，稍后我们再讨论)。
+       指令的职责是，当表达式的值改变时，将其产生的连带影响，响应式地作用于 DOM。回顾我们在介绍中看到的例子：</p>
+    <pre>
+        &lt;p v-if="seen"&gt;现在你看到我了&lt;/p&gt;
+    </pre>
+    <p>这里，v-if 指令将根据表达式 seen 的值的真假来插入/移除 &lt;p&gt; 元素。</p>
+    <h3>参数</h3>
+    <p>一些指令能够接收一个“参数”，在指令名称之后以冒号表示。
+       例如，v-bind 指令可以用于响应式地更新 HTML 特性：</p>
+    <pre>
+        &lt;a v-bind:href="url"&gt;...&lt;/a&gt;
+    </pre>
+    <p>在这里 href 是参数，告知 v-bind 指令将该元素的 href 特性与表达式 url 的值绑定。</p>
+    <p>另一个例子是 v-on 指令，它用于监听 DOM 事件：</p>
+    <pre>
+        &lt;a v-on:click="doSomething"&gt;...&lt;/a&gt;
+    </pre>
+
+    <h3>修饰符</h3>
+    <p>修饰符 (modifier) 是以半角句号 . 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。
+       例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：</p>
+    <pre>
+        &lt;form v-on:submit.prevent="onSubmit"&gt;...&lt;/form&gt;
+    </pre>
+
+    <h2>缩写</h2>
+    <p>v- 前缀作为一种视觉提示，用来识别模板中 Vue 特定的特性。
+       当你在使用 Vue.js 为现有标签添加动态行为 (dynamic behavior) 时，v- 前缀很有帮助，
+       然而，对于一些频繁用到的指令来说，就会感到使用繁琐。同时，在构建由 Vue 管理所有模板的单页面应用程序 
+       (SPA - single page application) 时，v- 前缀也变得没那么重要了。因此，Vue 为 v-bind 和 v-on 这两个最常用的指令，
+       提供了特定简写：</p>
+    <h3>v-bind缩写</h3>
+    <pre>
+        完整语法
+        &lt;a v-bind:href="url"&gt;...&lt;/a&gt;
+
+        缩写
+        &lt;a :href="url"&gt;...&lt;/a&gt;
+    </pre>
+    <h3>v-on缩写</h3>
+    <pre>
+        完整语法
+        &lt;a v-on:click="doSomething"&gt;...&lt;/a&gt;
+
+        缩写 
+        &lt;a @click="doSomething"&gt;...&lt;/a&gt;
+    </pre>
 </body>
 </html>
