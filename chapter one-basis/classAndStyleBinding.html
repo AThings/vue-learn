@@ -20,6 +20,9 @@
             clear: both;
             display: block;
         }
+        .a{
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -212,8 +215,8 @@
     <p>当 v-bind:style 使用需要添加浏览器引擎前缀的 CSS 属性时，
        如 transform，Vue.js 会自动侦测并添加相应的前缀。</p>
     <pre>
-        <div id='app6' class="clearfix" style="height: 500px;">
-            <div :style="styleObject">
+        <div id='app6' class="clearfix">
+            <div class="a">
                 test
             </div>
         </div>
@@ -223,10 +226,17 @@
             el: '#app6',
             data: {
                 styleObject: {
-                    transform: 'rotate(7deg)'
+                    transform: 'rotate(180deg)'
                 }
             }
         })
     </script>
+
+    <h3>多重值</h3>
+    <p>从 2.3.0 起你可以为 style 绑定中的属性提供一个包含多个值的数组，常用于提供多个带前缀的值，例如：</p>
+    <pre>
+        &lt;div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"&gt;&lt;/div&gt;
+    </pre>
+    <p>这样写只会渲染数组中最后一个被浏览器支持的值。在本例中，如果浏览器支持不带浏览器前缀的 flexbox，那么就只会渲染 display: flex。</p>
 </body>
 </html>
